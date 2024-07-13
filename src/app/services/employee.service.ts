@@ -13,4 +13,8 @@ export class EmployeeService {
   getParColorsDev(): Promise<any> {
     return lastValueFrom(this.http.get<any>(this.apiUrl));
   }
+
+  createEmployee(data: any) {
+    return lastValueFrom(this.http.post(this.apiUrl, data))
+  }
 }

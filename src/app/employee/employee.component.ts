@@ -2,11 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { EmployeeService } from '../services/employee.service';
 import { ToastService } from '../services/toast-message/toast.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-employee',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './employee.component.html',
   styleUrl: './employee.component.css',
 })
