@@ -22,8 +22,8 @@
             @if (employee) {
             <tbody>
                 @for (emp of employee; track employee) {
-                <tr class="pointer" [routerLink]="['/employeedetails', emp.id]">
-                    <td>{{ emp.id }}</td>
+                <tr>
+                    <td class="pointer text-primary" [routerLink]="['/employee/details', emp.id]">{{ emp.id }}</td>
                     <td>{{ emp.firstname }}</td>
                     <td>{{ emp.lastname }}</td>
                     <td>{{ emp.email }}</td>

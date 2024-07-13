@@ -8,6 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteAlertDialogComponent } from '../delete-alert/delete-alert.component';
+import { Employee } from '../services/types/employeetype';
 
 @Component({
   selector: 'app-employee',
