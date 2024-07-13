@@ -1,0 +1,14 @@
+.search-results {
+  height: 48.5vh;
+  overflow: scroll;
+}
+
+.card {
+    border: 1px solid #dee2e6; // Set default border for card
+}
+
+.card.selected {
+    border-left-width: 2px;
+    border-left-color: var(--app-primary-color);
+}
+

@@ -1,0 +1,12 @@
+<mat-dialog-content align="center" class="mat-typography">
+  <img src="assets/images/danger_icon.png"  style="background:none" alt="Profile" width="50" height="50" data-atf="1"
+    data-frt="0">
+  <h6 class="app-subheading-h6 my-3">{{item.title}}</h6>
+  <div class="table-responsive table-container">
+    <p>{{item.message}}</p>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+  <button class="btn btn-secondary me-2" matDialogClose>No</button>
+  <button class="btn btn-primary" (click)="confirm()">Yes</button>
+</mat-dialog-actions>

@@ -15,6 +15,18 @@ export class EmployeeService {
   }
 
   createEmployee(data: any) {
-    return lastValueFrom(this.http.post(this.apiUrl, data))
+    return lastValueFrom(this.http.post(this.apiUrl, data));
+  }
+
+  getEmployeeById(id: number): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.apiUrl}/${id}`));
+  }
+
+  updateEmployee(id: number, data: any) {
+    return lastValueFrom(this.http.put(`${this.apiUrl}/${id}`, data));
+  }
+
+  deleteEmployee(id: number): Promise<any> {
+    return lastValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
   }
 }

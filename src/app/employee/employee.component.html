@@ -1,14 +1,14 @@
 <div class="container-fluid m-0 py-3">
-<div class="col-12 d-flex justify-content-between align-items-center">
-     <h1>
-        Employee Details
-    </h1>
-    <div>
-        <button type="button" routerLink="/createemployee" class="btn btn-primary">Create Employee</button>
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h1>
+            Employee List
+        </h1>
+        <div>
+            <button type="button" routerLink="/createemployee" class="btn btn-primary">Create Employee</button>
+        </div>
     </div>
-</div>
     <div class="pt-3">
-        <table class="table table-hover table-dark">
+        <table class="table">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
@@ -16,17 +16,31 @@
                     <th scope="col">Last Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Designation</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             @if (employee) {
             <tbody>
                 @for (emp of employee; track employee) {
-                <tr>
+                <tr class="pointer" [routerLink]="['/employeedetails', emp.id]">
                     <td>{{ emp.id }}</td>
                     <td>{{ emp.firstname }}</td>
                     <td>{{ emp.lastname }}</td>
                     <td>{{ emp.email }}</td>
                     <td>{{ emp.designation }}</td>
+                    <td>
+                        <button mat-button class="action-button border" [matMenuTriggerFor]="belowMenu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #belowMenu="matMenu" yPosition="below" class="mt-3">
+                            <a mat-menu-item [routerLink]="['/employees/edit', emp.id]">
+                                <i class="bi bi-pencil-fill pe-2"></i>Edit
+                            </a>
+                            <hr class="mx-2 my-0">
+                            <button mat-menu-item (click)="deleteConfirmDialog(emp.id)"><i
+                                    class="bi bi-trash pe-2"></i>Delete</button>
+                        </mat-menu>
+                    </td>
                 </tr>
                 }
             </tbody>
