@@ -10,8 +10,8 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  getParColorsDev(): Promise<any> {
-    return lastValueFrom(this.http.get<any>(this.apiUrl));
+  getParColorsDev(skip: number, take: number): Promise<any> {
+    return lastValueFrom(this.http.get<any>(`${this.apiUrl}?skip=${skip}&take=${take}`));
   }
 
   createEmployee(data: any) {

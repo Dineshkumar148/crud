@@ -54,10 +54,8 @@ export class EditEmployeeComponent implements OnInit {
         this.employeeForm.patchValue(employee);
       }
     } catch (error: unknown) {
-      this.#toastService.showMessage(
-        (error as HttpErrorResponse)?.error?.message ?? 'Failed to load employee data',
-        'error'
-      );
+      const errorMessage = (error as HttpErrorResponse)?.error?.error ?? 'Failed to load employee data';
+      this.#toastService.showMessage(errorMessage, 'error');
     }
   }
 
@@ -89,10 +87,8 @@ export class EditEmployeeComponent implements OnInit {
         this.#router.navigate(['../']);
       }
     } catch (error: unknown) {
-      this.#toastService.showMessage(
-        (error as HttpErrorResponse)?.error?.message ?? 'Failed to update the employee',
-        'error'
-      );
+      const errorMessage = (error as HttpErrorResponse)?.error?.error ?? 'Failed to update the employee';
+      this.#toastService.showMessage(errorMessage, 'error');
     }
   }
 }

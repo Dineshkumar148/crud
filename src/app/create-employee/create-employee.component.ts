@@ -33,7 +33,7 @@ export class CreateEmployeeComponent {
     this.employeeForm = this.#fb.group({
       firstname: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.email]],
       designation: ['', [Validators.required]],
     });
   }
@@ -54,11 +54,10 @@ export class CreateEmployeeComponent {
         this.#router.navigate(['../'], { relativeTo: this.#route });
       }
     } catch (error: unknown) {
-      this.#toastService.showMessage(
-        (error as HttpErrorResponse)?.error?.message ??
-          'Failed to create the employee',
-        'error'
-      );
+      const errorMessage = (error as HttpErrorResponse)?.error?.error ?? 'Failed to create the employee';
+      console.log(errorMessage);
+      
+      this.#toastService.showMessage(errorMessage, 'error');
     }
   }
 }

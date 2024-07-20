@@ -1,50 +1,66 @@
 <div class="container-fluid m-0 py-3">
+    <a  routerLink="/whatsapp">whats app send message page</a>
     <div class="col-12 d-flex justify-content-between align-items-center">
-        <h1>
-            Employee List
-        </h1>
+        <h1>Employee List</h1>
+        
         <div>
             <button type="button" routerLink="/createemployee" class="btn btn-primary">Create Employee</button>
         </div>
     </div>
-    <div class="pt-3">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">First Name</th>
-                    <th scope="col">Last Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Designation</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            @if (employee) {
-            <tbody>
-                @for (emp of employee; track employee) {
-                <tr>
-                    <td class="pointer text-primary" [routerLink]="['/employee/details', emp.id]">{{ emp.id }}</td>
-                    <td>{{ emp.firstname }}</td>
-                    <td>{{ emp.lastname }}</td>
-                    <td>{{ emp.email }}</td>
-                    <td>{{ emp.designation }}</td>
-                    <td>
-                        <button mat-button class="action-button border" [matMenuTriggerFor]="belowMenu">
-                            <mat-icon>more_vert</mat-icon>
-                        </button>
-                        <mat-menu #belowMenu="matMenu" yPosition="below" class="mt-3">
-                            <a mat-menu-item [routerLink]="['/employees/edit', emp.id]">
-                                <i class="bi bi-pencil-fill pe-2"></i>Edit
-                            </a>
-                            <hr class="mx-2 my-0">
-                            <button mat-menu-item (click)="deleteConfirmDialog(emp.id)"><i
-                                    class="bi bi-trash pe-2"></i>Delete</button>
-                        </mat-menu>
-                    </td>
-                </tr>
+    @if (totalEmployee() === 0) {
+        <div class="pt-5 d-flex flex-column justify-content-center align-items-center">
+            <img src="assets/images/employee-empty-state.avif" alt="Employee empty state">
+            <h2 class="pt-3">No Employee Found</h2>
+        </div>
+    } @else {
+        <div class="pt-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Emp ID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Designation</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                @if (employee) {
+                    <tbody>
+                        @for (emp of employee; track employee;) {
+                            <tr>
+                                <td class="pointer text-primary" [routerLink]="['/employee/details', emp.id]">{{ emp.id }}</td>
+                                <td>{{ emp.firstname }}</td>
+                                <td>{{ emp.lastname }}</td>
+                                <td>{{ emp.email || "N/A" }}</td>
+                                <td>{{ emp.designation }}</td>
+                                <td>
+                                    <button mat-button class="action-button border" [matMenuTriggerFor]="belowMenu">
+                                        <mat-icon>more_vert</mat-icon>
+                                    </button>
+                                    <mat-menu #belowMenu="matMenu" yPosition="below" class="mt-3">
+                                        <a mat-menu-item [routerLink]="['/employees/edit', emp.id]">
+                                            <i class="bi bi-pencil-fill pe-2"></i>Edit
+                                        </a>
+                                        <hr class="mx-2 my-0">
+                                        <button mat-menu-item (click)="deleteConfirmDialog(emp.id)">
+                                            <i class="bi bi-trash pe-2"></i>Delete
+                                        </button>
+                                    </mat-menu>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
                 }
-            </tbody>
-            }
-        </table>
-    </div>
+            </table>
+        </div>
+        <mat-paginator
+            [length]="totalEmployee()"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10, 25, 50, 100]"
+            [pageIndex]="pageIndex"
+            showFirstLastButtons
+            (page)="handlePagination($event)">
+        </mat-paginator>
+    }
 </div>
