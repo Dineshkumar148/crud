@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
-  private apiUrl = 'http://localhost:8000/api/employees';
+  private apiUrl = 'http://localhost:8000/api/employee';
 
   constructor(private http: HttpClient) {}
 
@@ -18,6 +18,10 @@ export class EmployeeService {
     return lastValueFrom(this.http.post(this.apiUrl, data));
   }
 
+  bulkCreateEmployees(employees: any[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/bulk`, { employees });
+  }
+  
   getEmployeeById(id: number): Promise<any> {
     return lastValueFrom(this.http.get<any>(`${this.apiUrl}/${id}`));
   }

@@ -1,66 +1,106 @@
 <div class="container py-3">
-    <h1 class="row">
-        Create employee
-    </h1>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a routerLink="" class="text-decoration-none">Employee List</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Employee</li>
-        </ol>
-    </nav>
-    
-    <div class="row">
-        <form [formGroup]="employeeForm" (ngSubmit)="createEmployee()">
-            <div class="mb-3">
-                <label for="firstName" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="firstName" placeholder="Enter First Name" formControlName="firstname">
-                @if (employeeForm.get('firstname')?.touched) {
-                    @if (employeeForm.controls['firstname'].errors?.['required']) {
-                      <span class="text-danger">
-                        Please Enter the Employee first Name 
-                      </span>
-                    }
-                }
-            </div>
-            <div class="mb-3">
-                <label for="lastName" class="form-label">last Name</label>
-                <input type="text" class="form-control" id="lastName" placeholder="Enter last Name" formControlName="lastname">
-                @if (employeeForm.get('lastname')?.touched) {
-                    @if (employeeForm.controls['lastname'].errors?.['required']) {
-                      <span class="text-danger">
-                        Please Enter the Employee Last Name 
-                      </span>
-                    }
-                }
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Enter Email Adress" formControlName="email">
-                @if (employeeForm.get('email')?.touched) {
-                    <!-- @if (employeeForm.controls['email'].errors?.['required']) {
+  <h1 class="row">
+    Create employee
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="" class="text-decoration-none">Employee List</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Create Employee</li>
+    </ol>
+  </nav>
+  <!-- single employe create -->
+  <div class="row">
+    <form [formGroup]="employeeForm" (ngSubmit)="createEmployee()">
+      <div class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="firstName" placeholder="Enter First Name"
+          formControlName="firstname">
+        @if (employeeForm.get('firstname')?.touched) {
+        @if (employeeForm.controls['firstname'].errors?.['required']) {
+        <span class="text-danger">
+          Please Enter the Employee first Name
+        </span>
+        }
+        }
+      </div>
+      <div class="mb-3">
+        <label for="lastName" class="form-label">last Name</label>
+        <input type="text" class="form-control" id="lastName" placeholder="Enter last Name" formControlName="lastname">
+        @if (employeeForm.get('lastname')?.touched) {
+        @if (employeeForm.controls['lastname'].errors?.['required']) {
+        <span class="text-danger">
+          Please Enter the Employee Last Name
+        </span>
+        }
+        }
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter Email Adress" formControlName="email">
+        @if (employeeForm.get('email')?.touched) {
+        <!-- @if (employeeForm.controls['email'].errors?.['required']) {
                       <span class="text-danger">
                         Please Enter the employee email
                       </span>
                     } -->
-                    @if (employeeForm.controls['email'].errors?.['email']) {
-                      <span class="text-danger">
-                        Enter valid email id
-                      </span>
-                    }
-                  }
-            </div>
-            <div class="mb-3">
-                <label for="designation" class="form-label">Designation</label>
-                <input type="text" class="form-control" id="designation" placeholder="Enter Desigantion" formControlName="designation">
-                @if (employeeForm.get('designation')?.touched) {
-                    @if (employeeForm.controls['designation'].errors?.['required']) {
-                      <span class="text-danger">
-                        Please Enter the Employee designation 
-                      </span>
-                    }
-                }
-            </div>
-            <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">Create Employee</button>
-        </form>
+        @if (employeeForm.controls['email'].errors?.['email']) {
+        <span class="text-danger">
+          Enter valid email id
+        </span>
+        }
+        }
+      </div>
+      <div class="mb-3">
+        <label for="designation" class="form-label">Designation</label>
+        <input type="text" class="form-control" id="designation" placeholder="Enter Desigantion"
+          formControlName="designation">
+        @if (employeeForm.get('designation')?.touched) {
+        @if (employeeForm.controls['designation'].errors?.['required']) {
+        <span class="text-danger">
+          Please Enter the Employee designation
+        </span>
+        }
+        }
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="employeeForm.invalid">Create Employee</button>
+    </form>
+  </div>
+
+  <!-- bulk upload employee create  -->
+
+  <div class="row">
+    <div class="mb-3">
+      <label for="excelFile" class="form-label">Upload Excel File</label>
+      <input type="file" class="form-control" id="excelFile" (change)="onFileChange($event)">
     </div>
+    @if (excelData.length > 0) {
+    <div>
+      <button class="btn btn-danger mb-3" (click)="removeFile()">Remove File</button>
+    </div>
+    }
+    @if (excelData.length > 0) {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Designation</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of excelData; let i = index">
+          <td><input type="text" [(ngModel)]="data.firstname" class="form-control"></td>
+          <td><input type="text" [(ngModel)]="data.lastname" class="form-control"></td>
+          <td><input type="email" [(ngModel)]="data.email" class="form-control"></td>
+          <td><input type="text" [(ngModel)]="data.designation" class="form-control"></td>
+          <td><button class="btn btn-danger" (click)="removeRow(i)">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    }
+    <button class="btn btn-primary" (click)="uploadData()" [disabled]="excelData.length === 0">Bulk Upload Employee
+      Data</button>
+  </div>
 </div>
