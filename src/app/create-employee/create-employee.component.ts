@@ -1,4 +1,3 @@
-// create-employee.component.ts
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,6 +8,7 @@ import * as XLSX from 'xlsx';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 interface Employee {
   id: number;
@@ -17,22 +17,25 @@ interface Employee {
 @Component({
   selector: 'app-create-employee',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, CommonModule, FormsModule],
+  imports: [RouterLink, ReactiveFormsModule, CommonModule, FormsModule, NgCircleProgressModule],
   templateUrl: './create-employee.component.html',
-  styleUrl: './create-employee.component.css',
+  styleUrls: ['./create-employee.component.css'],
 })
 export class CreateEmployeeComponent {
   employeeForm: FormGroup;
-  #fb = inject(FormBuilder);
-  #toastService = inject(ToastService);
-  #empService = inject(EmployeeService);
-  #router = inject(Router);
-  #route = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
+  private empService = inject(EmployeeService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
   excelData: any[] = [];
   fileName: string = '';
-  
+  allowedFileTypes = ['.xlsx', '.ods', '.csv', '.tsv'];
+  uploadProgress: number = 0; // Track upload progress
+  isUploading: boolean = false; // Track if upload is in progress
+
   constructor() {
-    this.employeeForm = this.#fb.group({
+    this.employeeForm = this.fb.group({
       firstname: ['', [Validators.required]],
       lastname: ['', [Validators.required]],
       email: ['', [Validators.email]],
@@ -40,38 +43,59 @@ export class CreateEmployeeComponent {
     });
   }
 
-  // single employee create
-
   async createEmployee() {
     try {
       if (this.employeeForm.invalid) {
         return;
       }
-      const employee = (await this.#empService.createEmployee(
-        this.employeeForm.value
-      )) as Employee;
+      const employee = (await this.empService.createEmployee(this.employeeForm.value)) as Employee;
       if (employee) {
-        this.#toastService.showMessage(
-          'Employee created successfully',
-          'success'
-        );
-        this.#router.navigate(['../'], { relativeTo: this.#route });
+        this.toastService.showMessage('Employee created successfully', 'success');
+        this.router.navigate(['../'], { relativeTo: this.route });
       }
     } catch (error: unknown) {
       const errorMessage = (error as HttpErrorResponse)?.error?.error ?? 'Failed to create the employee';
       console.log(errorMessage);
-      
-      this.#toastService.showMessage(errorMessage, 'error');
+      this.toastService.showMessage(errorMessage, 'error');
     }
   }
 
-
-  // bulk upload 
-
   onFileChange(event: any) {
-    const target: DataTransfer = <DataTransfer>(event.target);
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-    this.fileName = target.files[0].name;
+    const files = event.target.files;
+    if (files.length > 1) {
+      this.toastService.showMessage('Upload a single file at a time', 'error');
+      return;
+    }
+    const file = files[0];
+    if (file) {
+      this.validateAndHandleFile(file);
+    }
+  }
+
+  onFileDrop(event: DragEvent) {
+    event.preventDefault();
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 1) {
+      this.toastService.showMessage('Upload a single file at a time', 'error');
+      return;
+    }
+    const file = files ? files[0] : null;
+    if (file) {
+      this.validateAndHandleFile(file);
+    }
+  }
+
+  validateAndHandleFile(file: File) {
+    const fileExtension = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+    if (!this.allowedFileTypes.includes(fileExtension)) {
+      this.toastService.showMessage('File format not supported', 'error');
+      return;
+    }
+    this.handleFile(file);
+  }
+
+  handleFile(file: File) {
+    this.fileName = file.name;
     const reader: FileReader = new FileReader();
     reader.onload = (e: any) => {
       const bstr: string = e.target.result;
@@ -87,12 +111,30 @@ export class CreateEmployeeComponent {
         designation: row[3]
       }));
     };
-    reader.readAsBinaryString(target.files[0]);
+    reader.readAsBinaryString(file);
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    const dropArea = event.currentTarget as HTMLElement;
+    dropArea.classList.add('drag-over');
+  }
+
+  onDragLeave(event: DragEvent) {
+    const dropArea = event.currentTarget as HTMLElement;
+    dropArea.classList.remove('drag-over');
+  }
+
+  onFileClick() {
+    const fileInput = document.getElementById('excelFile') as HTMLInputElement;
+    fileInput.click();
   }
 
   removeFile() {
     this.fileName = '';
     this.excelData = [];
+    this.uploadProgress = 0;
+    this.isUploading = false;
   }
 
   removeRow(index: number) {
@@ -101,16 +143,21 @@ export class CreateEmployeeComponent {
 
   async uploadData() {
     try {
-      const result = await lastValueFrom(this.#empService.bulkCreateEmployees(this.excelData));
-      if (result) {
-        this.#toastService.showMessage('Employees bulk data uploaded successfully', 'success');
-        this.#router.navigate(['../'], { relativeTo: this.#route });
+      this.isUploading = true;
+      const totalRows = this.excelData.length;
+      for (let i = 0; i < totalRows; i++) {
+        await lastValueFrom(this.empService.bulkCreateEmployees([this.excelData[i]]));
+        this.uploadProgress = Math.round(((i + 1) / totalRows) * 100);
       }
+      this.toastService.showMessage('Employees bulk data uploaded successfully', 'success');
+      this.router.navigate(['../'], { relativeTo: this.route });
     } catch (error: unknown) {
       const errorMessage = (error as HttpErrorResponse)?.error?.error ?? 'Failed to upload the employees bulk data';
       console.log(errorMessage);
-      this.#toastService.showMessage(errorMessage, 'error');
+      this.toastService.showMessage(errorMessage, 'error');
+    } finally {
+      this.isUploading = false;
+      this.uploadProgress = 0;
     }
   }
-
 }

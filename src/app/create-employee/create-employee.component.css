@@ -1,0 +1,27 @@
+.file-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    transition: border-color 0.3s;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .file-drop-area:hover,
+  .file-drop-area.drag-over {
+    border-color: #007bff;
+  }
+  
+  .upload-icon {
+    font-size: 3rem;
+    color: #007bff;
+  }
+  
+  .file-drop-area p {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #777;
+  }
+  

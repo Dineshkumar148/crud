@@ -11,5 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     importProvidersFrom(MatSnackBarModule, MatSnackBar),
     provideAnimationsAsync(), // Use MatSnackBarModule instead of MatSnackBar
+    
   ],
 };

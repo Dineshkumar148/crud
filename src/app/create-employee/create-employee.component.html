@@ -69,9 +69,13 @@
   <!-- bulk upload employee create  -->
 
   <div class="row">
-    <div class="mb-3">
+    <div class="py-5">
       <label for="excelFile" class="form-label">Upload Excel File</label>
-      <input type="file" class="form-control" id="excelFile" (change)="onFileChange($event)">
+      <div class="file-drop-area" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (click)="onFileClick()">
+        <input type="file" class="form-control" id="excelFile" (change)="onFileChange($event)" hidden>
+        <i class="bi bi-upload upload-icon"></i>
+        <p>Drag and drop your file here or click to upload</p>
+      </div>
     </div>
     @if (excelData.length > 0) {
     <div>
@@ -100,6 +104,20 @@
       </tbody>
     </table>
     }
+       <!-- Progress Bar -->
+       <div *ngIf="isUploading" class="d-flex justify-content-center mt-3">
+        <circle-progress
+          [percent]="uploadProgress"
+          [radius]="50"
+          [outerStrokeWidth]="10"
+          [innerStrokeWidth]="5"
+          [outerStrokeColor]="'#78C000'"
+          [innerStrokeColor]="'#C7E596'"
+          [animation]="true"
+          [animationDuration]="300"
+        >
+        </circle-progress>
+      </div>
     <button class="btn btn-primary" (click)="uploadData()" [disabled]="excelData.length === 0">Bulk Upload Employee
       Data</button>
   </div>
