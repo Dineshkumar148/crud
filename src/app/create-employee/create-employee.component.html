@@ -8,6 +8,7 @@
       <li class="breadcrumb-item active" aria-current="page">Create Employee</li>
     </ol>
   </nav>
+  <button (click)="downloadTemplate()" class="btn btn-primary">Download Template</button>
   <!-- single employe create -->
   <div class="row">
     <form [formGroup]="employeeForm" (ngSubmit)="createEmployee()">
@@ -83,26 +84,33 @@
     </div>
     }
     @if (excelData.length > 0) {
-    <table class="table">
-      <thead>
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Email</th>
-          <th>Designation</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of excelData; let i = index">
-          <td><input type="text" [(ngModel)]="data.firstname" class="form-control"></td>
-          <td><input type="text" [(ngModel)]="data.lastname" class="form-control"></td>
-          <td><input type="email" [(ngModel)]="data.email" class="form-control"></td>
-          <td><input type="text" [(ngModel)]="data.designation" class="form-control"></td>
-          <td><button class="btn btn-danger" (click)="removeRow(i)">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Designation</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of excelData; let i = index">
+            <td><input type="text" [(ngModel)]="data.firstname" class="form-control"></td>
+            <td><input type="text" [(ngModel)]="data.lastname" class="form-control"></td>
+            <td><input type="email" [(ngModel)]="data.email" class="form-control"></td>
+            <td>
+              <select [(ngModel)]="data.designation" class="form-control" required>
+                <option value="">Select Designation</option>
+                <option *ngFor="let designation of designations" [value]="designation">{{ designation }}</option>
+              </select>
+            </td>
+            <td><input type="date" [(ngModel)]="data.dateOfJoining" class="form-control"></td>
+            <td><button class="btn btn-danger" (click)="removeRow(i)">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
     }
        <!-- Progress Bar -->
        <div *ngIf="isUploading" class="d-flex justify-content-center mt-3">

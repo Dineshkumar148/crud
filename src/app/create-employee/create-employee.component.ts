@@ -23,6 +23,10 @@ interface Employee {
 })
 export class CreateEmployeeComponent {
   employeeForm: FormGroup;
+  designations: string[] = [
+    'blue',
+    'black',
+  ];
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
   private empService = inject(EmployeeService);
@@ -40,12 +44,14 @@ export class CreateEmployeeComponent {
       lastname: ['', [Validators.required]],
       email: ['', [Validators.email]],
       designation: ['', [Validators.required]],
+      dateOfJoining: ['', [Validators.required]]
     });
   }
 
   async createEmployee() {
     try {
       if (this.employeeForm.invalid) {
+        this.toastService.showMessage('Please fill in all required fields with valid data', 'error');
         return;
       }
       const employee = (await this.empService.createEmployee(this.employeeForm.value)) as Employee;
@@ -108,10 +114,20 @@ export class CreateEmployeeComponent {
         firstname: row[0],
         lastname: row[1],
         email: row[2],
-        designation: row[3]
+        designation: row[3],
+        dateOfJoining: this.excelDateToJSDate(row[4]) // Correctly convert Excel date to JS date
       }));
     };
     reader.readAsBinaryString(file);
+  }
+  
+  excelDateToJSDate(serial: number): string {
+    const utc_days = Math.floor(serial - 25569);
+    const date_info = new Date(utc_days * 86400 * 1000);
+    const year = date_info.getFullYear();
+    const month = String(date_info.getMonth() + 1).padStart(2, '0');
+    const day = String(date_info.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   onDragOver(event: DragEvent) {
@@ -143,6 +159,17 @@ export class CreateEmployeeComponent {
 
   async uploadData() {
     try {
+      let isValid = true;
+      this.excelData.forEach(row => {
+        if (!row.designation || !this.designations.includes(row.designation)) {
+          this.toastService.showMessage(`Invalid designation '${row.designation}' found in the file. Please select a valid color.`, 'error');
+          isValid = false;
+        }
+      });
+      if (!isValid) {
+        return;
+      }
+
       this.isUploading = true;
       const totalRows = this.excelData.length;
       for (let i = 0; i < totalRows; i++) {
@@ -159,5 +186,15 @@ export class CreateEmployeeComponent {
       this.isUploading = false;
       this.uploadProgress = 0;
     }
+  }
+  downloadTemplate() {
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([
+      { firstname: '', lastname: '', email: '', designation: '', 'Date (mm/dd/yyyy)': '' }
+    ], { header: ['firstname', 'lastname', 'email', 'designation', 'Date (mm/dd/yyyy)'], skipHeader: false });
+    
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Template');
+    
+    XLSX.writeFile(wb, 'employee_template.xlsx'); // template name 
   }
 }
