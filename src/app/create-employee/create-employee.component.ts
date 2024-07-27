@@ -190,7 +190,7 @@ export class CreateEmployeeComponent {
 
   downloadTemplate() {
     // Define the headers and their content
-    const headers = ['First Name', 'Last Name', 'Email', 'Designation', 'Date (mm/dd/yyyy)'];
+    const headers = ['First Name', 'Last Name', 'Email', 'Designation', 'Date (dd/mm/yyyy)'];
     
     // Create the worksheet
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([headers]);
@@ -200,7 +200,7 @@ export class CreateEmployeeComponent {
   
     // Add the first row of data
     XLSX.utils.sheet_add_json(ws, [
-      { firstname: '', lastname: '', email: '', designation: '', 'Date (mm/dd/yyyy)': '' }
+      { firstname: '', lastname: '', email: '', designation: '', 'Date (dd/mm/yyyy)': '' }
     ], { skipHeader: true, origin: -1 });
   
     // Create the workbook and append the worksheet
