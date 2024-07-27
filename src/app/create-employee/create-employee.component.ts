@@ -187,14 +187,27 @@ export class CreateEmployeeComponent {
       this.uploadProgress = 0;
     }
   }
+
   downloadTemplate() {
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([
-      { firstname: '', lastname: '', email: '', designation: '', 'Date (mm/dd/yyyy)': '' }
-    ], { header: ['firstname', 'lastname', 'email', 'designation', 'Date (mm/dd/yyyy)'], skipHeader: false });
+    // Define the headers and their content
+    const headers = ['First Name', 'Last Name', 'Email', 'Designation', 'Date (mm/dd/yyyy)'];
     
+    // Create the worksheet
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([headers]);
+    
+    // Define the column widths based on the content
+    ws['!cols'] = headers.map(header => ({ wch: header.length + 5 }));
+  
+    // Add the first row of data
+    XLSX.utils.sheet_add_json(ws, [
+      { firstname: '', lastname: '', email: '', designation: '', 'Date (mm/dd/yyyy)': '' }
+    ], { skipHeader: true, origin: -1 });
+  
+    // Create the workbook and append the worksheet
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Template');
-    
-    XLSX.writeFile(wb, 'employee_template.xlsx'); // template name 
+  
+    // Write the workbook to a file
+    XLSX.writeFile(wb, 'employee_template.xlsx');
   }
 }
